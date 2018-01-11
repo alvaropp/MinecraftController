@@ -9,34 +9,26 @@ import pyautogui as pag
 import time
 
 
-def getOrientation(s):
-    # Assume a received string of the form:
-    # [time,3,accX,accY,accZ,5,magX,magY,magZ,81,orientX,orientY,orientZ]
-    valueList = [x.strip() for x in s.split(',')]
-    orient = valueList[-3:]
-    orient[-1] = orient[-1][:-1]
-    print(orient)
-    return orient
-
 def processOrientation(orient):
+    print(float(orient[0]), screenAngle-float(orient[1]), float(orient[2]))
     # Forward & backward movement
-    if 35 < float(orient[2]) < 90:
+    if 35 < orient[2] < 90:
         pag.keyDown('w')
-        #time.sleep(0.05)
+        time.sleep(0.06)
         pag.keyUp("w")            
-    elif -90 < float(orient[2]) < -35:
+    elif -90 < orient[2] < -35:
         pag.keyDown('s')
-        #time.sleep(0.05)
+        time.sleep(0.06)
         pag.keyUp("s")
     
     # Sideways motion
-    rotDev = screenAngle - float(orient[1])
+    rotDev = screenAngle - orient[1]
     if rotDev > 30:
         # Rotate left
-        pag.moveRel(-40,0)
+        pag.moveRel(-20, 0, 0.1)
     elif rotDev < -30:
         # Rotate right
-        pag.moveRel(40,0)
+        pag.moveRel(20, 0 ,0.1)
 
 
 if __name__ == "__main__":
@@ -48,24 +40,31 @@ if __name__ == "__main__":
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     s.bind((host, port))
     
+
     # Calibrate screen direction
-    input("Calibrating: stand still and hold the phone vertical towards the screen")
+    input("Calibrating: stand still and hold the phone vertically towards the screen")
     try:
-        message, address = s.recvfrom(8192)
-        message = str(message)
-        orient = getOrientation(message)
-        screenAngle = float(orient[1])
+        while True:
+            message, address = s.recvfrom(128)
+            message = str(message)[:-1]
+            message = [x.strip() for x in message.split(',')]
+            print(len(message), message)
+            if len(message) == 17:
+                orient = [float(x) for x in message[-3:]]
+                screenAngle = float(orient[1])
+                break;
     except:
         raise
 
-    input("Calibrated")
+    input("Calibrated, angles: {}, screenAngle: {}".format(orient, screenAngle))
     while True:
         try:
-            message, address = s.recvfrom(8192)
-            message = str(message)
-            orient = getOrientation(message)
-            processOrientation(orient)
+            message, address = s.recvfrom(128)
+            message = str(message)[:-1]
+            message = [x.strip() for x in message.split(',')]
+            if len(message) == 17:
+                orient = [float(x) for x in message[-3:]]
+                processOrientation(orient)
         except:
             raise
-
 
