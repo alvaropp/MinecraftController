@@ -2,46 +2,52 @@
 
 # - Sensor part of the code based on code by Axel Lorenz
 # https://play.google.com/store/apps/details?id=de.lorenz_fenster.sensorstreamgps&hl=en_GB
-
-# - Keyboard press based on code from Phylliida
-# stackoverflow.com/questions/13564851/generate-keyboard-events
+#
+# - MCPIPY reference at
+# http://www.stuffaboutcode.com/p/minecraft-api-reference.html
 
 import socket
-import pyautogui as pag
 import time
+import mcpi.minecraft as minecraft
+
 
 
 def processOrientation(orient):
     print(float(orient[0]), screenAngle-float(orient[1]), float(orient[2]))
     # Forward & backward movement
     if 35 < orient[2] < 90:
-        pag.keyDown('w')
-        time.sleep(0.06)
-        pag.keyUp("w")            
+        playerPos = mc.player.getPos()
+        playerDir = mc.player.getDirection()
+        mc.player.setPos(playerPos + playerDir)
     elif -90 < orient[2] < -35:
-        pag.keyDown('s')
-        time.sleep(0.06)
-        pag.keyUp("s")
+        playerPos = mc.player.getPos()
+        playerDir = mc.player.getDirection()
+        mc.player.setPos(playerPos - playerDir)
     
     # Sideways motion
     rotDev = screenAngle - orient[1]
     if rotDev > 30:
         # Rotate left
-        pag.moveRel(-20, 0, 0.1)
+        mc.player.setRotation(mc.player.getRotation() - 5)
+
     elif rotDev < -30:
         # Rotate right
-        pag.moveRel(20, 0 ,0.1)
+        mc.player.setRotation(mc.player.getRotation() + 5)
 
 
 if __name__ == "__main__":
+
+    # Initialise connection to mobile phone
     host = ''
     port = 5555
-
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     s.bind((host, port))
     
+    # Initialise connection to the Minecraft game running Forge and
+    # RaspberryJam-Mod
+    mc = minecraft.Minecraft.create()
 
     # Calibrate screen direction
     input("Calibrating: stand still and hold the phone vertically towards the screen")
