@@ -17,15 +17,15 @@ def processOrientation(orient):
     if 35 < orient[2] < 90:
         # Forward
         playerPos = mc.player.getPos()
-        playerDir = mc.player.getDirection().__mul__(0.12)
+        playerDir = mc.player.getDirection().__mul__(0.16)
         mc.player.setPos(playerPos + playerDir)
-        time.sleep(0.005)
+        time.sleep(0.01)
     elif -90 < orient[2] < -35:
         # Backward
         playerPos = mc.player.getPos()
-        playerDir = mc.player.getDirection().__mul__(0.12)
+        playerDir = mc.player.getDirection().__mul__(0.16)
         mc.player.setPos(playerPos - playerDir)
-        time.sleep(0.005)
+        time.sleep(0.01)
 
     # Sideways motion
     rotDev = screenAngle - orient[1]
@@ -35,7 +35,6 @@ def processOrientation(orient):
     elif rotDev < -30:
         # Rotate right
         mc.player.setRotation(mc.player.getRotation() + 3)
-
 
 if __name__ == "__main__":
 
