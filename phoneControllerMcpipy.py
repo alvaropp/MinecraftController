@@ -11,28 +11,28 @@ import time
 import mcpi.minecraft as minecraft
 
 
-
 def processOrientation(orient):
     print(float(orient[0]), screenAngle-float(orient[1]), float(orient[2]))
     # Forward & backward movement
     if 35 < orient[2] < 90:
         playerPos = mc.player.getPos()
-        playerDir = mc.player.getDirection()
+        playerDir = mc.player.getDirection().__mul__(0.12)
         mc.player.setPos(playerPos + playerDir)
+        time.sleep(0.005)
     elif -90 < orient[2] < -35:
         playerPos = mc.player.getPos()
-        playerDir = mc.player.getDirection()
+        playerDir = mc.player.getDirection().__mul__(0.12)
         mc.player.setPos(playerPos - playerDir)
-    
+        time.sleep(0.005)
+
     # Sideways motion
     rotDev = screenAngle - orient[1]
     if rotDev > 30:
         # Rotate left
-        mc.player.setRotation(mc.player.getRotation() - 5)
-
+        mc.player.setRotation(mc.player.getRotation() - 3)
     elif rotDev < -30:
         # Rotate right
-        mc.player.setRotation(mc.player.getRotation() + 5)
+        mc.player.setRotation(mc.player.getRotation() + 3)
 
 
 if __name__ == "__main__":
