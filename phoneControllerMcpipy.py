@@ -15,11 +15,13 @@ def processOrientation(orient):
     print(float(orient[0]), screenAngle-float(orient[1]), float(orient[2]))
     # Forward & backward movement
     if 35 < orient[2] < 90:
+        # Forward
         playerPos = mc.player.getPos()
         playerDir = mc.player.getDirection().__mul__(0.12)
         mc.player.setPos(playerPos + playerDir)
         time.sleep(0.005)
     elif -90 < orient[2] < -35:
+        # Backward
         playerPos = mc.player.getPos()
         playerDir = mc.player.getDirection().__mul__(0.12)
         mc.player.setPos(playerPos - playerDir)
@@ -45,8 +47,7 @@ if __name__ == "__main__":
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     s.bind((host, port))
     
-    # Initialise connection to the Minecraft game running Forge and
-    # RaspberryJam-Mod
+    # Initialise connection to Minecraft running Forge and RaspberryJam-Mod
     mc = minecraft.Minecraft.create()
 
     # Calibrate screen direction
@@ -63,8 +64,9 @@ if __name__ == "__main__":
                 break;
     except:
         raise
-
     input("Calibrated, angles: {}, screenAngle: {}".format(orient, screenAngle))
+
+    # Main loop
     while True:
         try:
             message, address = s.recvfrom(128)
